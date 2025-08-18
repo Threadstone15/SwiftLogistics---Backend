@@ -1,0 +1,43 @@
+{
+  "name": "@swifttrack/order-service",
+  "version": "1.0.0",
+  "description": "Order processing service with saga orchestration",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "nest build",
+    "dev": "nest start --watch",
+    "start": "node dist/main.js",
+    "start:prod": "node dist/main.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/typeorm": "^10.0.0",
+    "@nestjs/config": "^3.0.0",
+    "@nestjs/terminus": "^10.0.1",
+    "@nestjs/schedule": "^3.0.1",
+    "typeorm": "^0.3.17",
+    "class-validator": "^0.14.0",
+    "class-transformer": "^0.5.1",
+    "winston": "^3.10.0",
+    "nest-winston": "^1.9.4",
+    "@swifttrack/shared": "workspace:*",
+    "@swifttrack/db": "workspace:*",
+    "@swifttrack/message-bus": "workspace:*",
+    "@swifttrack/security": "workspace:*",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.0.0",
+    "@nestjs/testing": "^10.0.0",
+    "@types/uuid": "^9.0.2",
+    "typescript": "^5.1.3"
+  }
+}

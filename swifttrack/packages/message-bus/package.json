@@ -1,0 +1,20 @@
+{
+  "name": "@swifttrack/message-bus",
+  "version": "1.0.0",
+  "description": "Message broker abstraction for RabbitMQ and Kafka",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "@swifttrack/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.1",
+    "typescript": "^5.1.6"
+  }
+}

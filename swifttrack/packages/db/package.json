@@ -1,0 +1,28 @@
+{
+  "name": "@swifttrack/db",
+  "version": "1.0.0",
+  "description": "Database entities, migrations, and seeds",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "migrate:up": "typeorm migration:run -d src/data-source.ts",
+    "migrate:down": "typeorm migration:revert -d src/data-source.ts",
+    "migration:create": "typeorm migration:create",
+    "migration:generate": "typeorm migration:generate -d src/data-source.ts",
+    "seed": "ts-node src/seeds/index.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "typeorm": "^0.3.17",
+    "pg": "^8.11.1",
+    "reflect-metadata": "^0.1.13",
+    "@swifttrack/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}

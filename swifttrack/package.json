@@ -1,0 +1,53 @@
+{
+  "name": "swifttrack",
+  "version": "1.0.0",
+  "description": "SwiftTrack Logistics Platform Backend",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"pnpm run dev:*\"",
+    "dev:api-gateway": "cd apps/api-gateway && pnpm dev",
+    "dev:order-service": "cd apps/order-service && pnpm dev",
+    "dev:driver-service": "cd apps/driver-service && pnpm dev",
+    "dev:tracking-service": "cd apps/tracking-service && pnpm dev",
+    "dev:warehouse-service": "cd apps/warehouse-service && pnpm dev",
+    "dev:notification-service": "cd apps/notification-service && pnpm dev",
+    "dev:admin-service": "cd apps/admin-service && pnpm dev",
+    "dev:integration-cms": "cd apps/integration-cms && pnpm dev",
+    "dev:integration-ros": "cd apps/integration-ros && pnpm dev",
+    "dev:integration-wms": "cd apps/integration-wms && pnpm dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm -r test:e2e",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "db:migrate": "cd packages/db && pnpm migrate:up",
+    "db:seed": "cd packages/db && pnpm seed",
+    "setup": "node scripts/setup.js",
+    "smoke-test": "node scripts/smoke-test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "concurrently": "^8.2.0",
+    "eslint": "^8.44.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.6.12"
+}
