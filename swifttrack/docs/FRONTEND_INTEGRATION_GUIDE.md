@@ -1,6 +1,7 @@
 # SwiftTrack Backend API Integration Guide
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Base URLs & Environment](#base-urls--environment)
 3. [Authentication](#authentication)
@@ -16,6 +17,7 @@
 SwiftTrack backend provides a comprehensive REST API with real-time WebSocket capabilities for logistics management. The system uses JWT-based authentication with role-based access control.
 
 ### System Architecture
+
 - **API Gateway**: Central entry point (Port 3000)
 - **Microservices**: Order, Driver, Warehouse, Tracking, Admin services
 - **Real-time**: WebSocket support for live tracking
@@ -24,6 +26,7 @@ SwiftTrack backend provides a comprehensive REST API with real-time WebSocket ca
 ## Base URLs & Environment
 
 ### Development Environment
+
 ```
 API Gateway:     http://localhost:3000
 API Base URL:    http://localhost:3000/api/v1
@@ -32,6 +35,7 @@ Documentation:   http://localhost:3000/api/docs
 ```
 
 ### Production Environment
+
 ```
 API Gateway:     https://api.swifttrack.com
 API Base URL:    https://api.swifttrack.com/api/v1
@@ -42,6 +46,7 @@ Documentation:   https://api.swifttrack.com/api/docs
 ## Authentication
 
 ### User Types
+
 - **CLIENT**: Regular customers placing orders
 - **DRIVER**: Delivery drivers
 - **ADMIN**: System administrators
@@ -49,6 +54,7 @@ Documentation:   https://api.swifttrack.com/api/docs
 ### Authentication Flow
 
 #### 1. Registration
+
 ```http
 POST /api/v1/auth/register
 Content-Type: application/json
@@ -61,6 +67,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -76,6 +83,7 @@ Content-Type: application/json
 ```
 
 #### 2. Login
+
 ```http
 POST /api/v1/auth/login
 Content-Type: application/json
@@ -87,6 +95,7 @@ Content-Type: application/json
 ```
 
 #### 3. Driver Login (Separate endpoint)
+
 ```http
 POST /api/v1/auth/driver/login
 Content-Type: application/json
@@ -98,6 +107,7 @@ Content-Type: application/json
 ```
 
 #### 4. Token Refresh
+
 ```http
 POST /api/v1/auth/refresh
 Content-Type: application/json
@@ -108,18 +118,22 @@ Content-Type: application/json
 ```
 
 #### 5. Using Authentication
+
 Include the access token in all API requests:
+
 ```http
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 #### 6. Logout
+
 ```http
 POST /api/v1/auth/logout
 Authorization: Bearer <access-token>
 ```
 
 ### Default Credentials (Development)
+
 ```
 Admin:  admin@swifttrack.com / Admin123!
 Client: client1@example.com / Client123!
@@ -130,31 +144,32 @@ Driver: driver1@swifttrack.com / Driver123!
 
 ### Authentication Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/v1/auth/register` | Register new user | No |
-| POST | `/api/v1/auth/login` | User login | No |
-| POST | `/api/v1/auth/driver/login` | Driver login | No |
-| POST | `/api/v1/auth/refresh` | Refresh access token | No |
-| POST | `/api/v1/auth/logout` | Logout user | Yes |
-| GET | `/api/v1/auth/profile` | Get user profile | Yes |
-| POST | `/api/v1/auth/change-password` | Change password | Yes |
+| Method | Endpoint                       | Description          | Auth Required |
+| ------ | ------------------------------ | -------------------- | ------------- |
+| POST   | `/api/v1/auth/register`        | Register new user    | No            |
+| POST   | `/api/v1/auth/login`           | User login           | No            |
+| POST   | `/api/v1/auth/driver/login`    | Driver login         | No            |
+| POST   | `/api/v1/auth/refresh`         | Refresh access token | No            |
+| POST   | `/api/v1/auth/logout`          | Logout user          | Yes           |
+| GET    | `/api/v1/auth/profile`         | Get user profile     | Yes           |
+| POST   | `/api/v1/auth/change-password` | Change password      | Yes           |
 
 ### Order Management Endpoints
 
-| Method | Endpoint | Description | Roles |
-|--------|----------|-------------|-------|
-| POST | `/api/v1/orders` | Create new order | CLIENT, ADMIN |
-| GET | `/api/v1/orders` | Get orders list | ALL |
-| GET | `/api/v1/orders/:id` | Get order by ID | ALL |
-| PUT | `/api/v1/orders/:id` | Update order | CLIENT, ADMIN |
-| DELETE | `/api/v1/orders/:id` | Cancel order | CLIENT, ADMIN |
-| POST | `/api/v1/orders/:id/assign-driver` | Assign driver | ADMIN |
-| PUT | `/api/v1/orders/:id/status` | Update status | ADMIN, DRIVER |
-| GET | `/api/v1/orders/:id/tracking` | Get tracking info | ALL |
-| POST | `/api/v1/orders/:id/rating` | Rate order | CLIENT |
+| Method | Endpoint                           | Description       | Roles         |
+| ------ | ---------------------------------- | ----------------- | ------------- |
+| POST   | `/api/v1/orders`                   | Create new order  | CLIENT, ADMIN |
+| GET    | `/api/v1/orders`                   | Get orders list   | ALL           |
+| GET    | `/api/v1/orders/:id`               | Get order by ID   | ALL           |
+| PUT    | `/api/v1/orders/:id`               | Update order      | CLIENT, ADMIN |
+| DELETE | `/api/v1/orders/:id`               | Cancel order      | CLIENT, ADMIN |
+| POST   | `/api/v1/orders/:id/assign-driver` | Assign driver     | ADMIN         |
+| PUT    | `/api/v1/orders/:id/status`        | Update status     | ADMIN, DRIVER |
+| GET    | `/api/v1/orders/:id/tracking`      | Get tracking info | ALL           |
+| POST   | `/api/v1/orders/:id/rating`        | Rate order        | CLIENT        |
 
 #### Create Order Example
+
 ```http
 POST /api/v1/orders
 Authorization: Bearer <token>
@@ -175,18 +190,19 @@ Content-Type: application/json
 
 ### Driver Management Endpoints
 
-| Method | Endpoint | Description | Roles |
-|--------|----------|-------------|-------|
-| GET | `/api/v1/drivers` | Get all drivers | ADMIN |
-| GET | `/api/v1/drivers/profile` | Get driver profile | DRIVER |
-| PUT | `/api/v1/drivers/profile` | Update driver profile | DRIVER |
-| GET | `/api/v1/drivers/current-orders` | Get current orders | DRIVER |
-| POST | `/api/v1/drivers/location` | Update location | DRIVER |
-| PUT | `/api/v1/drivers/availability` | Update availability | DRIVER |
-| GET | `/api/v1/drivers/:id` | Get driver by ID | ADMIN |
-| GET | `/api/v1/drivers/:id/performance` | Get performance metrics | ADMIN |
+| Method | Endpoint                          | Description             | Roles  |
+| ------ | --------------------------------- | ----------------------- | ------ |
+| GET    | `/api/v1/drivers`                 | Get all drivers         | ADMIN  |
+| GET    | `/api/v1/drivers/profile`         | Get driver profile      | DRIVER |
+| PUT    | `/api/v1/drivers/profile`         | Update driver profile   | DRIVER |
+| GET    | `/api/v1/drivers/current-orders`  | Get current orders      | DRIVER |
+| POST   | `/api/v1/drivers/location`        | Update location         | DRIVER |
+| PUT    | `/api/v1/drivers/availability`    | Update availability     | DRIVER |
+| GET    | `/api/v1/drivers/:id`             | Get driver by ID        | ADMIN  |
+| GET    | `/api/v1/drivers/:id/performance` | Get performance metrics | ADMIN  |
 
 #### Update Driver Location Example
+
 ```http
 POST /api/v1/drivers/location
 Authorization: Bearer <driver-token>
@@ -200,28 +216,30 @@ Content-Type: application/json
 
 ### Warehouse Management Endpoints
 
-| Method | Endpoint | Description | Roles |
-|--------|----------|-------------|-------|
-| GET | `/api/v1/warehouse/inventory` | Get inventory | ADMIN |
-| GET | `/api/v1/warehouse/locations` | Get warehouse locations | ADMIN |
-| GET | `/api/v1/warehouse/:location/orders` | Get warehouse orders | ADMIN |
-| POST | `/api/v1/warehouse/:location/process-order` | Process order | ADMIN |
-| GET | `/api/v1/warehouse/analytics` | Get analytics | ADMIN |
-| PUT | `/api/v1/warehouse/:location/capacity` | Update capacity | ADMIN |
+| Method | Endpoint                                    | Description             | Roles |
+| ------ | ------------------------------------------- | ----------------------- | ----- |
+| GET    | `/api/v1/warehouse/inventory`               | Get inventory           | ADMIN |
+| GET    | `/api/v1/warehouse/locations`               | Get warehouse locations | ADMIN |
+| GET    | `/api/v1/warehouse/:location/orders`        | Get warehouse orders    | ADMIN |
+| POST   | `/api/v1/warehouse/:location/process-order` | Process order           | ADMIN |
+| GET    | `/api/v1/warehouse/analytics`               | Get analytics           | ADMIN |
+| PUT    | `/api/v1/warehouse/:location/capacity`      | Update capacity         | ADMIN |
 
 ### Tracking Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/v1/tracking/:orderId` | Track order | Yes |
+| Method | Endpoint                    | Description | Auth Required |
+| ------ | --------------------------- | ----------- | ------------- |
+| GET    | `/api/v1/tracking/:orderId` | Track order | Yes           |
 
 #### Track Order Example
+
 ```http
 GET /api/v1/tracking/ORD-123456
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "orderId": "ORD-123456",
@@ -248,25 +266,26 @@ Authorization: Bearer <token>
 
 ### Admin Endpoints
 
-| Method | Endpoint | Description | Roles |
-|--------|----------|-------------|-------|
-| GET | `/api/v1/admin/dashboard` | Get dashboard data | ADMIN |
-| GET | `/api/v1/admin/system-health` | Get system health | ADMIN |
+| Method | Endpoint                      | Description        | Roles |
+| ------ | ----------------------------- | ------------------ | ----- |
+| GET    | `/api/v1/admin/dashboard`     | Get dashboard data | ADMIN |
+| GET    | `/api/v1/admin/system-health` | Get system health  | ADMIN |
 
 ### Health Check
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/health` | System health check | No |
+| Method | Endpoint  | Description         | Auth Required |
+| ------ | --------- | ------------------- | ------------- |
+| GET    | `/health` | System health check | No            |
 
 ## WebSocket Integration
 
 ### Connection
+
 ```javascript
 const socket = io('ws://localhost:3000', {
   auth: {
-    token: 'your-jwt-token'
-  }
+    token: 'your-jwt-token',
+  },
 });
 ```
 
@@ -275,24 +294,27 @@ const socket = io('ws://localhost:3000', {
 #### Client to Server Events
 
 ##### Join Order Tracking
+
 ```javascript
 socket.emit('join-tracking', {
-  orderId: 'ORD-123456'
+  orderId: 'ORD-123456',
 });
 ```
 
 ##### Leave Order Tracking
+
 ```javascript
 socket.emit('leave-tracking', {
-  orderId: 'ORD-123456'
+  orderId: 'ORD-123456',
 });
 ```
 
 #### Server to Client Events
 
 ##### Location Updates
+
 ```javascript
-socket.on('location-update', (data) => {
+socket.on('location-update', data => {
   console.log('Location update:', data);
   // {
   //   orderId: 'ORD-123456',
@@ -303,8 +325,9 @@ socket.on('location-update', (data) => {
 ```
 
 ##### Status Updates
+
 ```javascript
-socket.on('status-update', (data) => {
+socket.on('status-update', data => {
   console.log('Status update:', data);
   // {
   //   orderId: 'ORD-123456',
@@ -317,6 +340,7 @@ socket.on('status-update', (data) => {
 ## Error Handling
 
 ### HTTP Status Codes
+
 - `200` - Success
 - `201` - Created
 - `400` - Bad Request
@@ -327,6 +351,7 @@ socket.on('status-update', (data) => {
 - `500` - Internal Server Error
 
 ### Error Response Format
+
 ```json
 {
   "statusCode": 400,
@@ -342,6 +367,7 @@ socket.on('status-update', (data) => {
 ### Common Error Scenarios
 
 #### 1. Invalid Token
+
 ```json
 {
   "statusCode": 401,
@@ -351,6 +377,7 @@ socket.on('status-update', (data) => {
 ```
 
 #### 2. Insufficient Permissions
+
 ```json
 {
   "statusCode": 403,
@@ -360,6 +387,7 @@ socket.on('status-update', (data) => {
 ```
 
 #### 3. Rate Limiting
+
 ```json
 {
   "statusCode": 429,
@@ -373,6 +401,7 @@ socket.on('status-update', (data) => {
 ### React/JavaScript Integration
 
 #### 1. API Client Setup
+
 ```javascript
 // api/client.js
 import axios from 'axios';
@@ -387,7 +416,7 @@ class SwiftTrackAPI {
     });
 
     // Request interceptor to add auth token
-    this.client.interceptors.request.use((config) => {
+    this.client.interceptors.request.use(config => {
       const token = localStorage.getItem('accessToken');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -397,8 +426,8 @@ class SwiftTrackAPI {
 
     // Response interceptor for token refresh
     this.client.interceptors.response.use(
-      (response) => response,
-      async (error) => {
+      response => response,
+      async error => {
         if (error.response?.status === 401) {
           const refreshToken = localStorage.getItem('refreshToken');
           if (refreshToken) {
@@ -429,7 +458,7 @@ class SwiftTrackAPI {
     const response = await this.client.post('/auth/register', {
       email,
       password,
-      userType
+      userType,
     });
     this.saveTokens(response.data.tokens);
     return response.data;
@@ -499,6 +528,7 @@ export default new SwiftTrackAPI();
 ```
 
 #### 2. React Hook for Orders
+
 ```javascript
 // hooks/useOrders.js
 import { useState, useEffect } from 'react';
@@ -525,7 +555,7 @@ export const useOrders = (filters = {}) => {
     fetchOrders();
   }, [filters]);
 
-  const createOrder = async (orderData) => {
+  const createOrder = async orderData => {
     try {
       const newOrder = await api.createOrder(orderData);
       setOrders(prev => [newOrder, ...prev]);
@@ -540,6 +570,7 @@ export const useOrders = (filters = {}) => {
 ```
 
 #### 3. Real-time Tracking Component
+
 ```javascript
 // components/OrderTracking.jsx
 import React, { useState, useEffect } from 'react';
@@ -553,8 +584,8 @@ const OrderTracking = ({ orderId }) => {
     // Initialize socket connection
     const newSocket = io('ws://localhost:3000', {
       auth: {
-        token: localStorage.getItem('accessToken')
-      }
+        token: localStorage.getItem('accessToken'),
+      },
     });
 
     setSocket(newSocket);
@@ -563,23 +594,23 @@ const OrderTracking = ({ orderId }) => {
     newSocket.emit('join-tracking', { orderId });
 
     // Listen for location updates
-    newSocket.on('location-update', (data) => {
+    newSocket.on('location-update', data => {
       if (data.orderId === orderId) {
         setTrackingData(prev => ({
           ...prev,
           currentLocation: data.location,
-          lastUpdated: data.timestamp
+          lastUpdated: data.timestamp,
         }));
       }
     });
 
     // Listen for status updates
-    newSocket.on('status-update', (data) => {
+    newSocket.on('status-update', data => {
       if (data.orderId === orderId) {
         setTrackingData(prev => ({
           ...prev,
           status: data.status,
-          lastUpdated: data.timestamp
+          lastUpdated: data.timestamp,
         }));
       }
     });
@@ -632,6 +663,7 @@ export default OrderTracking;
 ```
 
 #### 4. Driver Location Tracker
+
 ```javascript
 // components/DriverLocationTracker.jsx
 import React, { useEffect, useState } from 'react';
@@ -646,9 +678,9 @@ const DriverLocationTracker = () => {
 
     if (isTracking && navigator.geolocation) {
       watchId = navigator.geolocation.watchPosition(
-        async (position) => {
+        async position => {
           const { latitude, longitude } = position.coords;
-          
+
           try {
             await api.updateDriverLocation(longitude, latitude);
             setLastLocation({ lat: latitude, lng: longitude });
@@ -656,13 +688,13 @@ const DriverLocationTracker = () => {
             console.error('Failed to update location:', error);
           }
         },
-        (error) => {
+        error => {
           console.error('Geolocation error:', error);
         },
         {
           enableHighAccuracy: true,
           timeout: 5000,
-          maximumAge: 0
+          maximumAge: 0,
         }
       );
     }
@@ -676,13 +708,13 @@ const DriverLocationTracker = () => {
 
   return (
     <div className="driver-location-tracker">
-      <button 
+      <button
         onClick={() => setIsTracking(!isTracking)}
         className={isTracking ? 'stop-tracking' : 'start-tracking'}
       >
         {isTracking ? 'Stop Tracking' : 'Start Tracking'}
       </button>
-      
+
       {lastLocation && (
         <div className="last-location">
           <p>Last updated location:</p>
@@ -700,6 +732,7 @@ export default DriverLocationTracker;
 ### Vue.js Integration
 
 #### 1. Composable for API calls
+
 ```javascript
 // composables/useSwiftTrackAPI.js
 import { ref, reactive } from 'vue';
@@ -717,7 +750,7 @@ export function useSwiftTrackAPI() {
   });
 
   // Add auth header
-  client.interceptors.request.use((config) => {
+  client.interceptors.request.use(config => {
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -728,7 +761,7 @@ export function useSwiftTrackAPI() {
   const login = async (email, password) => {
     loading.value = true;
     error.value = null;
-    
+
     try {
       const response = await client.post('/auth/login', { email, password });
       localStorage.setItem('accessToken', response.data.tokens.accessToken);
@@ -745,7 +778,7 @@ export function useSwiftTrackAPI() {
   const getOrders = async (params = {}) => {
     loading.value = true;
     error.value = null;
-    
+
     try {
       const response = await client.get('/orders', { params });
       return response.data;
@@ -770,6 +803,7 @@ export function useSwiftTrackAPI() {
 ### Angular Integration
 
 #### 1. Service for API calls
+
 ```typescript
 // services/swift-track-api.service.ts
 import { Injectable } from '@angular/core';
@@ -786,26 +820,28 @@ interface AuthResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SwiftTrackApiService {
   private readonly baseUrl = 'http://localhost:3000/api/v1';
   private currentUserSubject = new BehaviorSubject<any>(null);
-  
+
   constructor(private http: HttpClient) {}
 
   // Authentication
   login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, {
-      email,
-      password
-    }).pipe(
-      tap(response => {
-        localStorage.setItem('accessToken', response.tokens.accessToken);
-        localStorage.setItem('refreshToken', response.tokens.refreshToken);
-        this.currentUserSubject.next(response.user);
+    return this.http
+      .post<AuthResponse>(`${this.baseUrl}/auth/login`, {
+        email,
+        password,
       })
-    );
+      .pipe(
+        tap(response => {
+          localStorage.setItem('accessToken', response.tokens.accessToken);
+          localStorage.setItem('refreshToken', response.tokens.refreshToken);
+          this.currentUserSubject.next(response.user);
+        })
+      );
   }
 
   // Orders
@@ -832,7 +868,7 @@ export class SwiftTrackApiService {
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('accessToken');
     return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
   }
 
@@ -845,6 +881,7 @@ export class SwiftTrackApiService {
 ## Data Models
 
 ### Order Model
+
 ```typescript
 interface Order {
   orderId: string;
@@ -872,11 +909,12 @@ enum OrderStatus {
   PICKED = 'PICKED',
   IN_TRANSIT = 'IN_TRANSIT',
   DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 ```
 
 ### User Model
+
 ```typescript
 interface User {
   id: string;
@@ -888,6 +926,7 @@ interface User {
 ```
 
 ### Driver Model
+
 ```typescript
 interface Driver {
   id: string;
@@ -907,6 +946,7 @@ interface Driver {
 ```
 
 ### Tracking Data Model
+
 ```typescript
 interface TrackingData {
   orderId: string;
@@ -964,6 +1004,7 @@ Import this collection to test all endpoints:
 ### cURL Examples
 
 #### Login and get token
+
 ```bash
 # Login
 curl -X POST http://localhost:3000/api/v1/auth/login \
@@ -994,11 +1035,13 @@ curl -X POST http://localhost:3000/api/v1/orders \
 ```
 
 ### Rate Limiting
+
 - **Default Limit**: 100 requests per minute per IP
 - **Headers**: Check `X-RateLimit-*` headers in responses
 - **Response**: HTTP 429 when limit exceeded
 
 ### CORS Configuration
+
 ```javascript
 // Default CORS settings
 {
@@ -1012,6 +1055,7 @@ curl -X POST http://localhost:3000/api/v1/orders \
 ## Development Setup for Frontend
 
 ### 1. Start Backend Services
+
 ```bash
 # Clone and setup backend
 git clone <repository-url>
@@ -1027,6 +1071,7 @@ pnpm run dev
 ```
 
 ### 2. Environment Variables for Frontend
+
 ```javascript
 // .env.local (React/Next.js)
 REACT_APP_API_BASE_URL=http://localhost:3000/api/v1
@@ -1047,6 +1092,7 @@ export const environment = {
 ### 3. Proxy Configuration (for development CORS)
 
 #### React (package.json)
+
 ```json
 {
   "name": "swifttrack-frontend",
@@ -1055,20 +1101,22 @@ export const environment = {
 ```
 
 #### Vue.js (vue.config.js)
+
 ```javascript
 module.exports = {
   devServer: {
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
-        changeOrigin: true
-      }
-    }
-  }
+        changeOrigin: true,
+      },
+    },
+  },
 };
 ```
 
 #### Angular (proxy.conf.json)
+
 ```json
 {
   "/api/*": {
