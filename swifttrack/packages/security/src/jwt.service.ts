@@ -33,7 +33,7 @@ export class JwtService {
 
   verifyAccessToken(token: string): JwtPayload {
     try {
-      return jwt.verify(token, this.accessSecret) as JwtPayload;
+      return jwt.verify(token, this.accessSecret) as unknown as JwtPayload;
     } catch (error) {
       throw new Error('Invalid access token');
     }
@@ -41,7 +41,7 @@ export class JwtService {
 
   verifyRefreshToken(token: string): JwtPayload {
     try {
-      return jwt.verify(token, this.refreshSecret) as JwtPayload;
+      return jwt.verify(token, this.refreshSecret) as unknown as JwtPayload;
     } catch (error) {
       throw new Error('Invalid refresh token');
     }

@@ -1,7 +1,7 @@
 import * as argon2 from 'argon2';
 
 export class PasswordService {
-  private readonly options: argon2.Options;
+  private readonly options: argon2.Options & { raw?: false };
 
   constructor() {
     this.options = {
@@ -9,6 +9,7 @@ export class PasswordService {
       memoryCost: 2 ** 16, // 64MB
       timeCost: 3,
       parallelism: 1,
+      raw: false,
     };
   }
 

@@ -5,6 +5,7 @@
 
 -- Create extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- Create initial admin user table (will be managed by TypeORM migrations later)

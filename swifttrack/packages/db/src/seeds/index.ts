@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { AppDataSource } from '../data-source';
+import AppDataSource from '../data-source';
 import { User } from '../entities/user.entity';
 import { Driver } from '../entities/driver.entity';
 import { Order } from '../entities/order.entity';

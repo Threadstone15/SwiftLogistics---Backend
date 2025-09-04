@@ -1,11 +1,11 @@
-import { MessageBus, ExchangeType } from '../interfaces/message-bus.interface';
+import { MessageBus, ExchangeType } from './interfaces/message-bus.interface';
 
 export class MessageBusFactory {
   static create(type: 'rabbitmq' | 'kafka', connectionString: string): MessageBus {
     switch (type) {
       case 'rabbitmq':
         // Dynamic import to avoid loading RabbitMQ when using Kafka
-        const { RabbitMQMessageBus } = require('../implementations/rabbitmq.message-bus');
+        const { RabbitMQMessageBus } = require('./implementations/rabbitmq.message-bus');
         return new RabbitMQMessageBus(connectionString);
       case 'kafka':
         throw new Error('Kafka implementation not yet available');

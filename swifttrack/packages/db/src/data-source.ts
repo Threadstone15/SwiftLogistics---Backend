@@ -1,5 +1,10 @@
 import 'reflect-metadata';
+import { config } from 'dotenv';
 import { DataSource } from 'typeorm';
+
+// Load environment variables
+config();
+
 import { User } from './entities/user.entity';
 import { Driver } from './entities/driver.entity';
 import { UserSession } from './entities/user-session.entity';
@@ -11,7 +16,7 @@ import { WarehouseDetails } from './entities/warehouse-details.entity';
 import { AuditLog } from './entities/audit-log.entity';
 import { Outbox } from './entities/outbox.entity';
 
-export const AppDataSource = new DataSource({
+const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.DATABASE_HOST || 'localhost',
   port: parseInt(process.env.DATABASE_PORT || '5432'),
@@ -32,8 +37,8 @@ export const AppDataSource = new DataSource({
     AuditLog,
     Outbox,
   ],
-  migrations: ['src/migrations/*.ts'],
-  subscribers: ['src/subscribers/*.ts'],
+  migrations: ['dist/migrations/*.js'],
+  subscribers: ['dist/subscribers/*.js'],
 });
 
 export default AppDataSource;

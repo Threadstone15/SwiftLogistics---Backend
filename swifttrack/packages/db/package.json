@@ -7,22 +7,25 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "migrate:up": "typeorm migration:run -d src/data-source.ts",
-    "migrate:down": "typeorm migration:revert -d src/data-source.ts",
+    "migrate:up": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/data-source.ts",
+    "migrate:down": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/data-source.ts",
     "migration:create": "typeorm migration:create",
-    "migration:generate": "typeorm migration:generate -d src/data-source.ts",
-    "seed": "ts-node src/seeds/index.ts",
+    "migration:generate": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
+    "seed": "ts-node --transpile-only src/seeds/index.ts",
     "test": "jest"
   },
   "dependencies": {
-    "typeorm": "^0.3.17",
+    "@swifttrack/shared": "workspace:*",
+    "@swifttrack/security": "workspace:*",
+    "dotenv": "^16.3.1",
     "pg": "^8.11.1",
     "reflect-metadata": "^0.1.13",
-    "@swifttrack/shared": "workspace:*"
+    "typeorm": "^0.3.17"
   },
   "devDependencies": {
     "@types/pg": "^8.10.2",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.6"
   }
 }

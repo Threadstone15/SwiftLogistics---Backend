@@ -8,4 +8,4 @@ export * from './entities/warehouse.entity';
 export * from './entities/warehouse-details.entity';
 export * from './entities/audit-log.entity';
 export * from './entities/outbox.entity';
-export * from './data-source';
+export { default as AppDataSource } from './data-source';
