@@ -1,5 +1,55 @@
 # SwiftTrack Logistics Platform
 
+A comprehensive logistics management system built with microservices architecture using Node.js, NestJS, PostgreSQL, Redis, and RabbitMQ.
+
+## 🚀 Quick Start
+
+### ⚡ One-Command Setup
+
+**For Windows:**
+
+```bash
+setup.bat
+```
+
+**For macOS/Linux:**
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+**Manual Setup:**
+
+```bash
+pnpm install && docker-compose up -d && pnpm run build:packages && pnpm run db:migrate && pnpm run db:seed
+```
+
+Then start the API Gateway:
+
+```bash
+pnpm run dev:api-gateway
+```
+
+### 🔗 Quick Access (After Setup)
+
+| Service         | URL                            | Credentials |
+| --------------- | ------------------------------ | ----------- |
+| **API Gateway** | http://localhost:3000          | -           |
+| **API Docs**    | http://localhost:3000/api/docs | -           |
+| **Grafana**     | http://localhost:3001          | admin/admin |
+| **RabbitMQ**    | http://localhost:15672         | guest/guest |
+
+### 👥 Test Accounts
+
+- **Admin**: admin@swifttrack.com / Admin123!
+- **Client**: client1@example.com / Client123!
+- **Driver**: driver1@swifttrack.com / Driver123!
+
+📖 **Need help?** See [SETUP_GUIDE.md](./SETUP_GUIDE.md) for detailed instructions.
+
+---
+
 # SwiftTrack Logistics Management System
 
 ## Overview
@@ -44,42 +94,49 @@ SwiftTrack is a comprehensive logistics management system built with a microserv
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd swifttrack
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Environment setup**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configurations
    ```
 
 4. **Start infrastructure services**
+
    ```bash
    docker-compose up -d postgres redis rabbitmq minio
    ```
 
 5. **Run database migrations**
+
    ```bash
    pnpm run db:migrate
    ```
 
 6. **Seed initial data**
+
    ```bash
    pnpm run db:seed
    ```
 
 7. **Start development servers**
+
    ```bash
    # Start all services
    pnpm run dev
-   
+
    # Or start individual services
    pnpm run dev:api-gateway
    pnpm run dev:order-service
@@ -128,7 +185,7 @@ curl -X GET http://localhost:3000/api/v1/orders \
 External system mocks for development:
 
 - **CMS Mock (SOAP)**: http://localhost:8080
-- **ROS Mock (REST)**: http://localhost:8081  
+- **ROS Mock (REST)**: http://localhost:8081
 - **WMS Mock (TCP)**: localhost:8082
 
 ## 📊 Monitoring
@@ -143,7 +200,7 @@ External system mocks for development:
 SwiftTrack is built as a microservices architecture using NestJS, integrating three heterogeneous systems:
 
 1. **Client Management System (CMS)** - Legacy SOAP/XML API
-2. **Route Optimization System (ROS)** - Modern REST/JSON API  
+2. **Route Optimization System (ROS)** - Modern REST/JSON API
 3. **Warehouse Management System (WMS)** - Proprietary TCP/IP messaging
 
 ### Services
@@ -178,22 +235,26 @@ SwiftTrack is built as a microservices architecture using NestJS, integrating th
 ### Setup
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd swifttrack
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Start infrastructure services:
+
 ```bash
 docker compose up -d postgres redis rabbitmq minio grafana prometheus
 ```
 
 4. Setup environment and database:
+
 ```bash
 pnpm setup
 pnpm db:migrate
@@ -201,11 +262,13 @@ pnpm db:seed
 ```
 
 5. Start all services:
+
 ```bash
 pnpm dev
 ```
 
 6. Run smoke tests:
+
 ```bash
 pnpm smoke-test
 ```
@@ -312,12 +375,14 @@ pnpm format
 ## API Endpoints
 
 ### Authentication
+
 - `POST /auth/register` - Register client
 - `POST /auth/login` - Login (client/driver/admin)
 - `POST /auth/refresh` - Refresh JWT token
 - `POST /auth/logout` - Logout
 
 ### Orders
+
 - `POST /orders` - Create order (idempotent)
 - `GET /orders` - List orders with filters
 - `GET /orders/:id` - Get order details
@@ -327,33 +392,39 @@ pnpm format
 - `POST /orders/:id/pod` - Upload proof of delivery
 
 ### Drivers
+
 - `GET /drivers/me/manifest` - Get driver manifest
 - `GET /drivers/me/route` - Get optimized route
 - `POST /drivers/me/location` - Update driver location
 - `POST /drivers/me/ack-route` - Acknowledge route
 
 ### Warehouse
+
 - `GET /warehouse/:orderId` - Get warehouse info
 - `POST /warehouse/:orderId/arrive` - Mark arrival
 - `POST /warehouse/:orderId/depart` - Mark departure
 
 ### Admin
+
 - `GET /admin/reports/throughput` - Performance reports
 - `GET /admin/audit` - Audit logs
 
 ## WebSocket Events
 
 ### Client Portal
+
 - Join room: `orders/{orderId}`
 - Events: `order.status.updated`, `order.location.updated`
 
 ### Driver App
+
 - Join room: `drivers/{driverId}`
 - Events: `route.updated`, `manifest.updated`, `order.assigned`
 
 ## State Machine
 
 Order status transitions:
+
 ```
 placed → at_warehouse → picked → in_transit → delivered → confirmed
                                           ↘ failed
@@ -362,7 +433,9 @@ placed → at_warehouse → picked → in_transit → delivered → confirmed
 ## Integration Patterns
 
 ### Saga Pattern
+
 Order processing uses orchestrated saga with compensations:
+
 1. Create in CMS
 2. Add to WMS
 3. Plan route in ROS
@@ -370,9 +443,11 @@ Order processing uses orchestrated saga with compensations:
 5. Notify client
 
 ### Outbox Pattern
+
 Domain events are stored in outbox table and published to RabbitMQ asynchronously.
 
 ### Circuit Breaker
+
 External service calls protected with circuit breakers and retry logic.
 
 ## Monitoring

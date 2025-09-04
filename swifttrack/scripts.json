@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "setup": "pnpm install && docker-compose up -d && pnpm run build:packages && pnpm run db:migrate && pnpm run db:seed",
+    "dev": "concurrently \"pnpm run dev:api-gateway\" \"pnpm run dev:order-service\"",
+    "dev:api-gateway": "pnpm --filter=@swifttrack/api-gateway dev",
+    "dev:order-service": "pnpm --filter=@swifttrack/order-service dev",
+    "build": "pnpm -r build",
+    "build:packages": "pnpm --filter=@swifttrack/shared build && pnpm --filter=@swifttrack/security build && pnpm --filter=@swifttrack/message-bus build && pnpm --filter=@swifttrack/db build",
+    "db:migrate": "cd packages/db && pnpm migrate:up",
+    "db:rollback": "cd packages/db && pnpm migrate:down",
+    "db:seed": "cd packages/db && pnpm seed",
+    "db:migration:create": "cd packages/db && pnpm migration:create",
+    "infra:up": "docker-compose up -d",
+    "infra:down": "docker-compose down",
+    "infra:logs": "docker-compose logs -f",
+    "health": "curl http://localhost:3000/health || echo 'Service not ready'",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  }
+}
