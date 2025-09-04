@@ -50,7 +50,13 @@ export class OrdersController {
     @Body() createOrderDto: CreateOrderDto,
     @User() user: any
   ): Promise<OrderResponseDto> {
-    return this.ordersService.createOrder(createOrderDto, user.userId);
+    console.log(`🚀 [ORDERS-CONTROLLER] POST /api/v1/orders - Creating new order`);
+    console.log(`👤 [ORDERS-CONTROLLER] User ID: ${user.userId} | Email: ${user.email}`);
+    console.log(`📦 [ORDERS-CONTROLLER] Order data:`, JSON.stringify(createOrderDto, null, 2));
+    
+    const result = await this.ordersService.createOrder(createOrderDto, user.userId);
+    console.log(`✅ [ORDERS-CONTROLLER] Order created successfully`);
+    return result;
   }
 
   @Get()

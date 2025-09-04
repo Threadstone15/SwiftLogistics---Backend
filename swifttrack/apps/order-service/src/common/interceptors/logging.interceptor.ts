@@ -10,8 +10,8 @@ import { tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 
 @Injectable()
-export class LoggingInterceptor implements NestInterceptor {
-  private readonly logger = new Logger(LoggingInterceptor.name);
+export class OrderServiceLoggingInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(OrderServiceLoggingInterceptor.name);
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
@@ -19,17 +19,14 @@ export class LoggingInterceptor implements NestInterceptor {
     const url = request.url;
     const userAgent = request.get('User-Agent') || '';
     const clientIp = request.ip || request.connection.remoteAddress;
-    const userId = request.user?.id || 'anonymous';
-    const userRole = request.user?.role || 'guest';
     
     const now = Date.now();
     const requestId = Math.random().toString(36).substring(2, 15);
     
     // Log incoming request
-    console.log(`🔥 [API-GATEWAY] [${requestId}] INCOMING REQUEST`);
+    console.log(`🔥 [ORDER-SERVICE] [${requestId}] INCOMING REQUEST`);
     console.log(`📍 Method: ${method} | URL: ${url}`);
-    console.log(`👤 User: ${userId} (${userRole}) | IP: ${clientIp}`);
-    console.log(`🌐 User-Agent: ${userAgent}`);
+    console.log(`🌐 IP: ${clientIp} | User-Agent: ${userAgent}`);
     
     if (request.body && Object.keys(request.body).length > 0) {
       console.log(`📝 Request Body:`, JSON.stringify(request.body, null, 2));
@@ -50,7 +47,7 @@ export class LoggingInterceptor implements NestInterceptor {
         const contentLength = response.get('content-length') || 'unknown';
         const responseTime = Date.now() - now;
 
-        console.log(`✅ [API-GATEWAY] [${requestId}] REQUEST COMPLETED`);
+        console.log(`✅ [ORDER-SERVICE] [${requestId}] REQUEST COMPLETED`);
         console.log(`📊 Status: ${statusCode} | Size: ${contentLength} bytes | Time: ${responseTime}ms`);
         
         if (responseData && typeof responseData === 'object') {
@@ -58,17 +55,17 @@ export class LoggingInterceptor implements NestInterceptor {
         }
         
         this.logger.log(
-          `${method} ${url} ${statusCode} ${contentLength} - ${userAgent} ${responseTime}ms [User: ${userId}]`
+          `${method} ${url} ${statusCode} ${contentLength} - ${userAgent} ${responseTime}ms`
         );
       }),
       catchError((error) => {
         const responseTime = Date.now() - now;
-        console.error(`❌ [API-GATEWAY] [${requestId}] REQUEST FAILED`);
+        console.error(`❌ [ORDER-SERVICE] [${requestId}] REQUEST FAILED`);
         console.error(`💥 Error: ${error.message} | Time: ${responseTime}ms`);
         console.error(`🔍 Stack:`, error.stack);
         
         this.logger.error(
-          `${method} ${url} ERROR - ${error.message} ${responseTime}ms [User: ${userId}]`
+          `${method} ${url} ERROR - ${error.message} ${responseTime}ms`
         );
         
         return throwError(() => error);

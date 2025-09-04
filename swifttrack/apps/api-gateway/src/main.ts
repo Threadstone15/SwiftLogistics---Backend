@@ -8,7 +8,13 @@ import * as compression from 'compression';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  console.log(`🚀 [API-GATEWAY] Starting SwiftTrack API Gateway...`);
+  console.log(`📅 [API-GATEWAY] Startup Time: ${new Date().toISOString()}`);
+  console.log(`🌍 [API-GATEWAY] Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📝 [API-GATEWAY] Log Level: ${process.env.LOG_LEVEL || 'info'}`);
+  
   // Configure logger
+  console.log(`📋 [API-GATEWAY] Configuring Winston logger...`);
   const logger = WinstonModule.createLogger({
     level: process.env.LOG_LEVEL || 'info',
     format: winston.format.combine(

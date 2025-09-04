@@ -20,23 +20,34 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
+    console.log(`🔧 [AUTH-SERVICE] Starting user registration process`);
+    console.log(`📧 Email: ${registerDto.email} | User Type: ${registerDto.userType || 'CLIENT'}`);
+    
     try {
       // Check if user already exists
+      console.log(`🔍 [AUTH-SERVICE] Checking if user exists: ${registerDto.email}`);
       const existingUser = await this.findUserByEmail(registerDto.email);
       if (existingUser) {
+        console.log(`❌ [AUTH-SERVICE] User already exists: ${registerDto.email}`);
         throw new ConflictException('User already exists');
       }
+      console.log(`✅ [AUTH-SERVICE] Email is available: ${registerDto.email}`);
 
       // Hash password
+      console.log(`🔐 [AUTH-SERVICE] Hashing password for: ${registerDto.email}`);
       const passwordHash = await this.passwordService.hash(registerDto.password);
+      console.log(`✅ [AUTH-SERVICE] Password hashed successfully`);
 
       // Create user
+      console.log(`👤 [AUTH-SERVICE] Creating new user: ${registerDto.email}`);
       const user = await this.createUser({
         ...registerDto,
         passwordHash,
       });
+      console.log(`✅ [AUTH-SERVICE] User created successfully with ID: ${user.id}`);
 
       // Generate tokens
+      console.log(`🎫 [AUTH-SERVICE] Generating JWT tokens for user: ${user.id}`);
       const payload: JwtPayload = {
         sub: user.id,
         email: user.email,
@@ -46,9 +57,12 @@ export class AuthService {
 
       const accessToken = await this.securityJwtService.signAccessToken(payload);
       const refreshToken = await this.securityJwtService.signRefreshToken(payload);
+      console.log(`✅ [AUTH-SERVICE] JWT tokens generated successfully`);
 
       // Store refresh token
+      console.log(`💾 [AUTH-SERVICE] Storing refresh token for user: ${user.id}`);
       await this.storeRefreshToken(user.id, refreshToken);
+      console.log(`✅ [AUTH-SERVICE] Registration completed successfully for: ${registerDto.email}`);
 
       return {
         user: {
@@ -62,6 +76,7 @@ export class AuthService {
         },
       };
     } catch (error) {
+      console.error(`💥 [AUTH-SERVICE] Registration failed for ${registerDto.email}:`, error.message);
       if (error instanceof ConflictException) {
         throw error;
       }
@@ -70,21 +85,30 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
+    console.log(`🔑 [AUTH-SERVICE] Starting login process for: ${loginDto.email}`);
+    
     try {
+      console.log(`🔍 [AUTH-SERVICE] Finding user by email: ${loginDto.email}`);
       const user = await this.findUserByEmail(loginDto.email);
       if (!user) {
+        console.log(`❌ [AUTH-SERVICE] User not found: ${loginDto.email}`);
         throw new UnauthorizedException('Invalid credentials');
       }
+      console.log(`✅ [AUTH-SERVICE] User found: ${user.id}`);
 
+      console.log(`🔐 [AUTH-SERVICE] Verifying password for user: ${user.id}`);
       const isPasswordValid = await this.passwordService.verify(
         user.passwordHash,
         loginDto.password
       );
 
       if (!isPasswordValid) {
+        console.log(`❌ [AUTH-SERVICE] Invalid password for user: ${loginDto.email}`);
         throw new UnauthorizedException('Invalid credentials');
       }
+      console.log(`✅ [AUTH-SERVICE] Password verified successfully for user: ${user.id}`);
 
+      console.log(`🎫 [AUTH-SERVICE] Generating JWT tokens for login: ${user.id}`);
       const payload: JwtPayload = {
         sub: user.id,
         email: user.email,

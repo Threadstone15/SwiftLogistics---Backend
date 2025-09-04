@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TerminusModule } from '@nestjs/terminus';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,6 +7,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { OrderModule } from './order/order.module';
 import { HealthModule } from './health/health.module';
 import { SagaModule } from './saga/saga.module';
+import { OrderServiceLoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 @Module({
   imports: [
@@ -30,6 +32,12 @@ import { SagaModule } from './saga/saga.module';
     OrderModule,
     HealthModule,
     SagaModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: OrderServiceLoggingInterceptor,
+    },
   ],
 })
 export class AppModule {}

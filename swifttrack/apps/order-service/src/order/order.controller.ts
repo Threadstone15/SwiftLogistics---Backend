@@ -7,26 +7,46 @@ export class OrderController {
 
   @Get()
   findAll() {
-    return this.orderService.findAll();
+    console.log(`🌐 [ORDER-CONTROLLER] GET /orders - Finding all orders`);
+    const result = this.orderService.findAll();
+    console.log(`✅ [ORDER-CONTROLLER] GET /orders completed`);
+    return result;
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+    console.log(`🌐 [ORDER-CONTROLLER] GET /orders/${id} - Finding specific order`);
+    console.log(`🎯 [ORDER-CONTROLLER] Requested order ID: ${id}`);
+    const result = this.orderService.findOne(id);
+    console.log(`✅ [ORDER-CONTROLLER] GET /orders/${id} completed`);
+    return result;
   }
 
   @Post()
   create(@Body() createOrderDto: any) {
-    return this.orderService.create(createOrderDto);
+    console.log(`🌐 [ORDER-CONTROLLER] POST /orders - Creating new order`);
+    console.log(`📦 [ORDER-CONTROLLER] Request body:`, JSON.stringify(createOrderDto, null, 2));
+    const result = this.orderService.create(createOrderDto);
+    console.log(`✅ [ORDER-CONTROLLER] POST /orders completed`);
+    return result;
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateOrderDto: any) {
-    return this.orderService.update(id, updateOrderDto);
+    console.log(`🌐 [ORDER-CONTROLLER] PUT /orders/${id} - Updating order`);
+    console.log(`🎯 [ORDER-CONTROLLER] Order ID: ${id}`);
+    console.log(`📝 [ORDER-CONTROLLER] Update data:`, JSON.stringify(updateOrderDto, null, 2));
+    const result = this.orderService.update(id, updateOrderDto);
+    console.log(`✅ [ORDER-CONTROLLER] PUT /orders/${id} completed`);
+    return result;
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.orderService.remove(id);
+    console.log(`🌐 [ORDER-CONTROLLER] DELETE /orders/${id} - Removing order`);
+    console.log(`🎯 [ORDER-CONTROLLER] Order ID to delete: ${id}`);
+    const result = this.orderService.remove(id);
+    console.log(`✅ [ORDER-CONTROLLER] DELETE /orders/${id} completed`);
+    return result;
   }
 }

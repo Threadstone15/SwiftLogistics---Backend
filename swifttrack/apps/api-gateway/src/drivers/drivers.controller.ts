@@ -37,7 +37,12 @@ export class DriversController {
     @Query('limit') limit: number = 10,
     @Query('available') available?: boolean
   ) {
-    return this.driversService.getDrivers({ page, limit, available });
+    console.log(`🚛 [DRIVERS-CONTROLLER] GET /api/v1/drivers - Getting all drivers`);
+    console.log(`📄 [DRIVERS-CONTROLLER] Page: ${page} | Limit: ${limit} | Available: ${available}`);
+    
+    const result = await this.driversService.getDrivers({ page, limit, available });
+    console.log(`✅ [DRIVERS-CONTROLLER] Retrieved drivers successfully`);
+    return result;
   }
 
   @Get('profile')
