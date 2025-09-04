@@ -12,6 +12,8 @@ import { JwtService as SecurityJwtService, PasswordService } from '@swifttrack/s
 
 @Injectable()
 export class AuthService {
+  private mockUsers: any[] = []; // Temporary in-memory storage for development
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -278,9 +280,14 @@ export class AuthService {
 
   // Private helper methods - these would typically interact with a database
   private async findUserByEmail(email: string): Promise<any> {
-    // Implementation would query the database
-    // For now, returning null as placeholder
-    return null;
+    console.log(`🔍 [AUTH-SERVICE] Searching for user in mock storage: ${email}`);
+    const user = this.mockUsers.find(u => u.email === email);
+    if (user) {
+      console.log(`✅ [AUTH-SERVICE] User found: ${email}`);
+    } else {
+      console.log(`❌ [AUTH-SERVICE] User not found: ${email}`);
+    }
+    return user || null;
   }
 
   private async findDriverByEmail(email: string): Promise<any> {
@@ -294,8 +301,28 @@ export class AuthService {
   }
 
   private async createUser(userData: any): Promise<any> {
-    // Implementation would create user in database
-    return null;
+    console.log(`💾 [AUTH-SERVICE] Creating user in mock storage with email: ${userData.email}`);
+    
+    // For now, create a mock user object and store in memory
+    // In a real implementation, this would save to database and return the created user
+    const mockUser = {
+      id: Date.now(), // Use timestamp as a temporary ID
+      userId: Date.now(),
+      email: userData.email,
+      name: userData.name,
+      userType: userData.userType || 'CLIENT',
+      passwordHash: userData.passwordHash,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    // Store in mock array
+    this.mockUsers.push(mockUser);
+    
+    console.log(`✅ [AUTH-SERVICE] Mock user created and stored with ID: ${mockUser.id}`);
+    console.log(`📊 [AUTH-SERVICE] Total users in mock storage: ${this.mockUsers.length}`);
+    return mockUser;
   }
 
   private async updateUserPassword(userId: string, passwordHash: string): Promise<void> {
