@@ -9,6 +9,9 @@ export class RegisterDto {
   @MinLength(8)
   password: string;
 
+  @IsString()
+  name: string;
+
   @IsEnum(UserType)
   @IsOptional()
   userType?: UserType = UserType.CLIENT;
