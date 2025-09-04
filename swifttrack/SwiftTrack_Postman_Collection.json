@@ -1,0 +1,927 @@
+{
+  "info": {
+    "name": "SwiftTrack Logistics Platform",
+    "description": "Complete API collection for SwiftTrack backend services including API Gateway and Order Service",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "api_gateway_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "order_service_url",
+      "value": "http://localhost:3002",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🚀 API Gateway",
+      "item": [
+        {
+          "name": "🔐 Authentication",
+          "item": [
+            {
+              "name": "Register User",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"+1234567890\",\n  \"address\": \"123 Main St, City, State 12345\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/auth/register",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "auth", "register"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "    const response = pm.response.json();",
+                      "    if (response.access_token) {",
+                      "        pm.collectionVariables.set('access_token', response.access_token);",
+                      "    }",
+                      "    if (response.refresh_token) {",
+                      "        pm.collectionVariables.set('refresh_token', response.refresh_token);",
+                      "    }",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/auth/login",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "auth", "login"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Driver Login",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"driver@example.com\",\n  \"password\": \"DriverPass123!\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/auth/driver/login",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "auth", "driver", "login"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Profile",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/auth/profile",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "auth", "profile"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Refresh Token",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/auth/refresh",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "auth", "refresh"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Change Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"SecurePass123!\",\n  \"newPassword\": \"NewSecurePass123!\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/auth/change-password",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "auth", "change-password"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Logout",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/auth/logout",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "auth", "logout"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "📦 Orders",
+          "item": [
+            {
+              "name": "Create Order",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pickupAddress\": \"123 Pickup Street, City, State 12345\",\n  \"deliveryAddress\": \"456 Delivery Avenue, City, State 67890\",\n  \"packageDetails\": {\n    \"weight\": 15.5,\n    \"dimensions\": {\n      \"length\": 30,\n      \"width\": 20,\n      \"height\": 15\n    },\n    \"fragile\": false,\n    \"description\": \"Electronics package\"\n  },\n  \"priority\": \"STANDARD\",\n  \"scheduledPickupTime\": \"2025-09-05T10:00:00Z\",\n  \"estimatedDeliveryTime\": \"2025-09-06T15:00:00Z\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/orders",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "orders"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Orders",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/orders?page=1&limit=10&status=PENDING",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "orders"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "status",
+                      "value": "PENDING"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Order by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/orders/123e4567-e89b-12d3-a456-426614174000",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "orders", "123e4567-e89b-12d3-a456-426614174000"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Order",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"IN_TRANSIT\",\n  \"estimatedDeliveryTime\": \"2025-09-06T14:00:00Z\",\n  \"notes\": \"Updated delivery time due to traffic\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/orders/123e4567-e89b-12d3-a456-426614174000",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "orders", "123e4567-e89b-12d3-a456-426614174000"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Assign Driver to Order",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"driverId\": \"456e7890-e89b-12d3-a456-426614174001\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/orders/123e4567-e89b-12d3-a456-426614174000/assign-driver",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "orders", "123e4567-e89b-12d3-a456-426614174000", "assign-driver"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Order Status",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"DELIVERED\",\n  \"deliveredAt\": \"2025-09-06T13:45:00Z\",\n  \"signature\": \"John Smith\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/orders/123e4567-e89b-12d3-a456-426614174000/status",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "orders", "123e4567-e89b-12d3-a456-426614174000", "status"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Order Tracking",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/orders/123e4567-e89b-12d3-a456-426614174000/tracking",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "orders", "123e4567-e89b-12d3-a456-426614174000", "tracking"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Rate Order",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rating\": 5,\n  \"feedback\": \"Excellent service, delivered on time!\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/orders/123e4567-e89b-12d3-a456-426614174000/rating",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "orders", "123e4567-e89b-12d3-a456-426614174000", "rating"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Order",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/orders/123e4567-e89b-12d3-a456-426614174000",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "orders", "123e4567-e89b-12d3-a456-426614174000"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "🚛 Drivers",
+          "item": [
+            {
+              "name": "Get All Drivers",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/drivers?available=true&location=New York",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "drivers"],
+                  "query": [
+                    {
+                      "key": "available",
+                      "value": "true"
+                    },
+                    {
+                      "key": "location",
+                      "value": "New York"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Driver Profile",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/drivers/profile",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "drivers", "profile"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Driver Profile",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+1987654321\",\n  \"vehicleInfo\": {\n    \"make\": \"Ford\",\n    \"model\": \"Transit\",\n    \"year\": 2022,\n    \"licensePlate\": \"ABC123\",\n    \"capacity\": 1000\n  },\n  \"emergencyContact\": {\n    \"name\": \"Jane Doe\",\n    \"phone\": \"+1555123456\",\n    \"relationship\": \"Spouse\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/drivers/profile",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "drivers", "profile"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Current Orders",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/drivers/current-orders",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "drivers", "current-orders"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Driver Location",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"latitude\": 40.7128,\n  \"longitude\": -74.0060,\n  \"heading\": 45,\n  \"speed\": 35,\n  \"timestamp\": \"2025-09-04T10:30:00Z\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/drivers/location",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "drivers", "location"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Availability",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"available\": true,\n  \"reason\": \"Back from break\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/drivers/availability",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "drivers", "availability"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Driver by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/drivers/456e7890-e89b-12d3-a456-426614174001",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "drivers", "456e7890-e89b-12d3-a456-426614174001"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Driver Performance",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/drivers/456e7890-e89b-12d3-a456-426614174001/performance?period=30d",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "drivers", "456e7890-e89b-12d3-a456-426614174001", "performance"],
+                  "query": [
+                    {
+                      "key": "period",
+                      "value": "30d"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "🏭 Warehouse",
+          "item": [
+            {
+              "name": "Get Inventory",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/warehouse/inventory?location=NYC_MAIN&status=AVAILABLE",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "warehouse", "inventory"],
+                  "query": [
+                    {
+                      "key": "location",
+                      "value": "NYC_MAIN"
+                    },
+                    {
+                      "key": "status",
+                      "value": "AVAILABLE"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Warehouse Locations",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/warehouse/locations",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "warehouse", "locations"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Orders by Location",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/warehouse/NYC_MAIN/orders?status=PROCESSING",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "warehouse", "NYC_MAIN", "orders"],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "PROCESSING"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Process Order",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderId\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"action\": \"PREPARE_FOR_SHIPMENT\",\n  \"notes\": \"Package ready for pickup\",\n  \"processedBy\": \"warehouse_worker_001\"\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/warehouse/NYC_MAIN/process-order",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "warehouse", "NYC_MAIN", "process-order"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Analytics",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/warehouse/analytics?period=7d&location=NYC_MAIN",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "warehouse", "analytics"],
+                  "query": [
+                    {
+                      "key": "period",
+                      "value": "7d"
+                    },
+                    {
+                      "key": "location",
+                      "value": "NYC_MAIN"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Capacity",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentCapacity\": 850,\n  \"maxCapacity\": 1000,\n  \"availableSpace\": 150\n}"
+                },
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/warehouse/NYC_MAIN/capacity",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "warehouse", "NYC_MAIN", "capacity"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "👨‍💼 Admin",
+          "item": [
+            {
+              "name": "Get Dashboard",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/admin/dashboard?period=24h",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "admin", "dashboard"],
+                  "query": [
+                    {
+                      "key": "period",
+                      "value": "24h"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get System Health",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/admin/system-health",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "admin", "system-health"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "📍 Tracking",
+          "item": [
+            {
+              "name": "Track Order",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/tracking/123e4567-e89b-12d3-a456-426614174000",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "tracking", "123e4567-e89b-12d3-a456-426614174000"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "🏥 Health",
+          "item": [
+            {
+              "name": "Health Check",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{api_gateway_url}}/api/v1/health",
+                  "host": ["{{api_gateway_url}}"],
+                  "path": ["api", "v1", "health"]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📦 Order Service",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"customer123\",\n  \"items\": [\n    {\n      \"productId\": \"prod001\",\n      \"quantity\": 2,\n      \"price\": 29.99\n    }\n  ],\n  \"shippingAddress\": \"123 Main St, City, State 12345\",\n  \"totalAmount\": 59.98\n}"
+            },
+            "url": {
+              "raw": "{{order_service_url}}/orders",
+              "host": ["{{order_service_url}}"],
+              "path": ["orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_service_url}}/orders",
+              "host": ["{{order_service_url}}"],
+              "path": ["orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_service_url}}/orders/order123",
+              "host": ["{{order_service_url}}"],
+              "path": ["orders", "order123"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PROCESSING\",\n  \"notes\": \"Order is being prepared for shipment\"\n}"
+            },
+            "url": {
+              "raw": "{{order_service_url}}/orders/order123",
+              "host": ["{{order_service_url}}"],
+              "path": ["orders", "order123"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Order",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{order_service_url}}/orders/order123",
+              "host": ["{{order_service_url}}"],
+              "path": ["orders", "order123"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Order Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_service_url}}/health",
+              "host": ["{{order_service_url}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🧪 Test Data Setup",
+      "item": [
+        {
+          "name": "Create Test User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.access_token) {",
+                  "        pm.collectionVariables.set('access_token', response.access_token);",
+                  "    }",
+                  "    if (response.refresh_token) {",
+                  "        pm.collectionVariables.set('refresh_token', response.refresh_token);",
+                  "    }",
+                  "    console.log('Test user created and logged in successfully');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@swifttrack.com\",\n  \"password\": \"TestPassword123!\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"phone\": \"+1234567890\",\n  \"address\": \"123 Test Street, Test City, TS 12345\"\n}"
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/v1/auth/register",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Test User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.access_token) {",
+                  "        pm.collectionVariables.set('access_token', response.access_token);",
+                  "    }",
+                  "    if (response.refresh_token) {",
+                  "        pm.collectionVariables.set('refresh_token', response.refresh_token);",
+                  "    }",
+                  "    console.log('Logged in successfully, tokens saved');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@swifttrack.com\",\n  \"password\": \"TestPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/v1/auth/login",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
