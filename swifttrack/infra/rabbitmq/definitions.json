@@ -1,0 +1,131 @@
+{
+  "rabbit_version": "3.11.0",
+  "rabbitmq_version": "3.11.0",
+  "product_name": "RabbitMQ",
+  "product_version": "3.11.0",
+  "users": [
+    {
+      "name": "guest",
+      "password_hash": "QPK1vhxvQQOp4vDRHGFdONE30WvwQi6+lA==",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    },
+    {
+      "name": "swifttrack"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "guest",
+      "vhost": "swifttrack",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [],
+  "parameters": [],
+  "global_parameters": [
+    {
+      "name": "internal_cluster_id",
+      "value": "rabbitmq-cluster-id-swifttrack"
+    }
+  ],
+  "policies": [],
+  "queues": [
+    {
+      "name": "order.events",
+      "vhost": "swifttrack",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "driver.events",
+      "vhost": "swifttrack",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "tracking.events",
+      "vhost": "swifttrack",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "notification.events",
+      "vhost": "swifttrack",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "swifttrack.events",
+      "vhost": "swifttrack",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "swifttrack.direct",
+      "vhost": "swifttrack",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "swifttrack.events",
+      "vhost": "swifttrack",
+      "destination": "order.events",
+      "destination_type": "queue",
+      "routing_key": "order.*",
+      "arguments": {}
+    },
+    {
+      "source": "swifttrack.events",
+      "vhost": "swifttrack",
+      "destination": "driver.events",
+      "destination_type": "queue",
+      "routing_key": "driver.*",
+      "arguments": {}
+    },
+    {
+      "source": "swifttrack.events",
+      "vhost": "swifttrack",
+      "destination": "tracking.events",
+      "destination_type": "queue",
+      "routing_key": "tracking.*",
+      "arguments": {}
+    },
+    {
+      "source": "swifttrack.events",
+      "vhost": "swifttrack",
+      "destination": "notification.events",
+      "destination_type": "queue",
+      "routing_key": "notification.*",
+      "arguments": {}
+    }
+  ]
+}

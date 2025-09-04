@@ -138,7 +138,7 @@ services:
   # WMS TCP Mock Server
   mock-wms:
     build:
-      context: ./infra/mocks/wms
+      context: ./infrastructure/mocks/wms-service
       dockerfile: Dockerfile
     container_name: swifttrack-mock-wms
     ports:

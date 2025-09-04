@@ -1,0 +1,85 @@
+[
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/ros/api/optimize",
+      "headers": {
+        "Content-Type": ["application/json"]
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "routeId": "ROUTE-123456",
+        "optimizedWaypoints": [
+          {
+            "orderId": "ORD-001",
+            "lat": 6.9271,
+            "lng": 79.8612,
+            "estimatedArrival": "2025-09-04T10:30:00Z",
+            "sequence": 1
+          },
+          {
+            "orderId": "ORD-002",
+            "lat": 6.9371,
+            "lng": 79.8712,
+            "estimatedArrival": "2025-09-04T11:15:00Z",
+            "sequence": 2
+          }
+        ],
+        "totalDistance": 15.2,
+        "totalDuration": 45,
+        "optimizationScore": 0.95
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/ros/api/routes/.*",
+      "headers": {
+        "Content-Type": ["application/json"]
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "routeId": "ROUTE-123456",
+        "status": "active",
+        "driverId": "DRV-001",
+        "waypoints": [
+          {
+            "orderId": "ORD-001",
+            "lat": 6.9271,
+            "lng": 79.8612,
+            "status": "pending"
+          }
+        ],
+        "lastUpdated": "2025-09-04T08:00:00Z"
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/ros/api/health"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "status": "healthy",
+        "service": "ROS Mock Service",
+        "timestamp": "2025-09-04T08:00:00Z"
+      }
+    }
+  }
+]

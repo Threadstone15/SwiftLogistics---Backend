@@ -1,0 +1,57 @@
+[
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/cms/soap/orders",
+      "headers": {
+        "Content-Type": ["application/soap+xml; charset=utf-8"]
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/soap+xml; charset=utf-8"]
+      },
+      "body": {
+        "type": "XML",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body><CreateOrderResponse xmlns=\"http://cms.swifttrack.com/\"><OrderId>CMS-123456</OrderId><Status>Success</Status></CreateOrderResponse></soap:Body></soap:Envelope>"
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/cms/soap/customers",
+      "headers": {
+        "Content-Type": ["application/soap+xml; charset=utf-8"]
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/soap+xml; charset=utf-8"]
+      },
+      "body": {
+        "type": "XML",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body><CreateCustomerResponse xmlns=\"http://cms.swifttrack.com/\"><CustomerId>CUST-789012</CustomerId><Status>Success</Status></CreateCustomerResponse></soap:Body></soap:Envelope>"
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/cms/soap/health"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "status": "healthy",
+        "service": "CMS Mock Service",
+        "timestamp": "2025-09-04T08:00:00Z"
+      }
+    }
+  }
+]
