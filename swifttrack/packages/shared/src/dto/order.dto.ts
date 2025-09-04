@@ -89,3 +89,63 @@ export class FailOrderDto {
   @IsString()
   reason: string;
 }
+
+export class UpdateOrderDto {
+  @IsEnum(OrderSize)
+  @IsOptional()
+  orderSize?: OrderSize;
+
+  @IsEnum(OrderWeight)
+  @IsOptional()
+  orderWeight?: OrderWeight;
+
+  @IsString()
+  @IsOptional()
+  orderType?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  priority?: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  amount?: number;
+
+  @IsString()
+  @IsOptional()
+  address?: string;
+
+  @ValidateNested()
+  @Type(() => LocationDto)
+  @IsOptional()
+  locationOrigin?: LocationDto;
+
+  @ValidateNested()
+  @Type(() => LocationDto)
+  @IsOptional()
+  locationDestination?: LocationDto;
+
+  @IsString()
+  @IsOptional()
+  specialInstructions?: string;
+}
+
+export class OrderResponseDto {
+  orderId: string;
+  userId: string;
+  orderSize: OrderSize;
+  orderWeight: OrderWeight;
+  orderType: string;
+  status: OrderStatus;
+  priority: boolean;
+  amount: string;
+  address: string;
+  locationOriginLng: string;
+  locationOriginLat: string;
+  locationDestinationLng: string;
+  locationDestinationLat: string;
+  specialInstructions?: string;
+  proofOfDeliveryUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}

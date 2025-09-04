@@ -34,7 +34,7 @@ export interface JwtPayload {
   sub: number;
   email: string;
   type: 'user' | 'driver';
-  userType?: UserType;
+  userType: UserType;
   iat?: number;
   exp?: number;
 }

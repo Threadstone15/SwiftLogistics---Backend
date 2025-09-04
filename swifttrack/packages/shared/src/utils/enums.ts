@@ -1,6 +1,7 @@
 export enum UserType {
   CLIENT = 'client',
   ADMIN = 'admin',
+  DRIVER = 'driver',
 }
 
 export enum OrderSize {

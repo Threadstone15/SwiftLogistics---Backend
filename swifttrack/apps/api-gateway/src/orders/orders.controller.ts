@@ -61,10 +61,10 @@ export class OrdersController {
   @ApiQuery({ name: 'status', required: false, enum: OrderStatus })
   @ApiResponse({ status: 200, description: 'Orders retrieved successfully' })
   async getOrders(
+    @User() user: any,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
-    @Query('status') status?: OrderStatus,
-    @User() user: any
+    @Query('status') status?: OrderStatus
   ) {
     return this.ordersService.getOrders(user.userId, user.userType, {
       page,

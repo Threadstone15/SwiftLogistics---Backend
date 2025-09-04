@@ -37,16 +37,16 @@ export class OrdersService {
         orderWeight: createOrderDto.orderWeight,
         orderType: createOrderDto.orderType,
         priority: createOrderDto.priority,
-        amount: createOrderDto.amount,
+        amount: createOrderDto.amount.toString(),
         address: createOrderDto.address,
-        locationOriginLng: createOrderDto.locationOriginLng,
-        locationOriginLat: createOrderDto.locationOriginLat,
-        locationDestinationLng: createOrderDto.locationDestinationLng,
-        locationDestinationLat: createOrderDto.locationDestinationLat,
+        locationOriginLng: createOrderDto.locationOrigin?.lng?.toString() || '0',
+        locationOriginLat: createOrderDto.locationOrigin?.lat?.toString() || '0',
+        locationDestinationLng: createOrderDto.locationDestination?.lng?.toString() || '0',
+        locationDestinationLat: createOrderDto.locationDestination?.lat?.toString() || '0',
         specialInstructions: createOrderDto.specialInstructions,
         status: OrderStatus.PLACED,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
     } catch (error) {
       throw new BadRequestException('Failed to create order');

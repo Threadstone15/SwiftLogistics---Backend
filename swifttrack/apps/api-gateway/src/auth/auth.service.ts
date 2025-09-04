@@ -7,14 +7,8 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { LoginDto, RegisterDto, UserType } from '@swifttrack/shared';
+import { LoginDto, RegisterDto, UserType, JwtPayload } from '@swifttrack/shared';
 import { JwtService as SecurityJwtService, PasswordService } from '@swifttrack/security';
-
-interface JwtPayload {
-  sub: string;
-  email: string;
-  userType: UserType;
-}
 
 @Injectable()
 export class AuthService {
@@ -46,6 +40,7 @@ export class AuthService {
       const payload: JwtPayload = {
         sub: user.id,
         email: user.email,
+        type: 'user',
         userType: user.userType,
       };
 
@@ -93,6 +88,7 @@ export class AuthService {
       const payload: JwtPayload = {
         sub: user.id,
         email: user.email,
+        type: 'user',
         userType: user.userType,
       };
 
@@ -139,6 +135,7 @@ export class AuthService {
       const payload: JwtPayload = {
         sub: driver.id,
         email: driver.email,
+        type: 'driver',
         userType: UserType.DRIVER,
       };
 
@@ -173,7 +170,7 @@ export class AuthService {
       const payload = await this.securityJwtService.verifyRefreshToken(refreshToken);
       
       // Check if refresh token is stored
-      const storedToken = await this.getStoredRefreshToken(payload.sub);
+      const storedToken = await this.getStoredRefreshToken(payload.sub.toString());
       if (!storedToken || storedToken !== refreshToken) {
         throw new UnauthorizedException('Invalid refresh token');
       }
@@ -181,6 +178,7 @@ export class AuthService {
       const newAccessToken = await this.securityJwtService.signAccessToken({
         sub: payload.sub,
         email: payload.email,
+        type: payload.type,
         userType: payload.userType,
       });
 
@@ -195,7 +193,7 @@ export class AuthService {
   async logout(accessToken: string) {
     try {
       const payload = await this.securityJwtService.verifyAccessToken(accessToken);
-      await this.removeRefreshToken(payload.sub);
+      await this.removeRefreshToken(payload.sub.toString());
       await this.blacklistToken(accessToken);
       
       return { message: 'Logout successful' };

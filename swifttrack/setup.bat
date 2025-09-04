@@ -46,28 +46,75 @@ if %ERRORLEVEL% NEQ 0 (
 echo ✅ Docker is running
 
 echo.
+echo 🔍 Validating workspace structure...
+if not exist "package.json" (
+    echo ❌ package.json not found. Please run this script from the swifttrack directory.
+    pause
+    exit /b 1
+)
+
+if not exist "docker-compose.yml" (
+    echo ❌ docker-compose.yml not found. Please run this script from the swifttrack directory.
+    pause
+    exit /b 1
+)
+echo ✅ Workspace structure validated
+
+echo.
 echo 🔧 Installing dependencies...
-pnpm install
+call pnpm install
+if %ERRORLEVEL% NEQ 0 (
+    echo ❌ Package installation failed. Please check your internet connection and try again.
+    pause
+    exit /b 1
+)
 
 echo.
 echo 🐳 Starting infrastructure services...
-docker-compose up -d
+call docker-compose up -d
+if %ERRORLEVEL% NEQ 0 (
+    echo ❌ Failed to start Docker services. Please check Docker Desktop is running.
+    pause
+    exit /b 1
+)
 
 echo.
 echo ⏳ Waiting for services to be ready...
-timeout /t 10 /nobreak >nul
+timeout /t 15 /nobreak >nul
+
+echo.
+echo 🔍 Verifying service health...
+call docker-compose ps
+echo.
+echo 📊 Checking PostgreSQL connection...
+timeout /t 5 /nobreak >nul
 
 echo.
 echo 📦 Building packages...
-pnpm run build:packages
+call pnpm run build:packages
+if %ERRORLEVEL% NEQ 0 (
+    echo ❌ Package build failed. Please check the output above.
+    pause
+    exit /b 1
+)
 
 echo.
 echo 🗄️ Running database migrations...
-pnpm run db:migrate
+call pnpm run db:migrate
+if %ERRORLEVEL% NEQ 0 (
+    echo ❌ Database migration failed. Please check the output above.
+    pause
+    exit /b 1
+)
 
 echo.
 echo 🌱 Seeding initial data...
-pnpm run db:seed
+call pnpm run db:seed
+if %ERRORLEVEL% NEQ 0 (
+    echo ❌ Database seeding failed. Please check the output above.
+    pause
+    exit /b 1
+)
 
 echo.
 echo 🎉 Setup completed successfully!
@@ -75,7 +122,10 @@ echo ================================
 echo.
 
 echo 📊 Service Status:
-docker-compose ps
+call docker-compose ps
+if %ERRORLEVEL% NEQ 0 (
+    echo ⚠️  Could not check service status. Services may still be starting up.
+)
 
 echo.
 echo 🌐 Available Endpoints:
@@ -95,9 +145,31 @@ echo   • Client:  client1@example.com / Client123!
 echo   • Driver:  driver1@swifttrack.com / Driver123!
 
 echo.
-echo 🚀 To start the backend services:
-echo   pnpm run dev:api-gateway
+echo 🚀 To start the backend services, run one of:
+echo   pnpm run dev              (Start all services)
+echo   pnpm run dev:api-gateway  (Start API Gateway only)
+echo.
+echo 🧪 To run health checks:
+echo   .\health-check.bat
 echo.
 echo 📖 For detailed instructions, see SETUP_GUIDE.md
+echo 🔧 For troubleshooting, see SETUP_CHECKLIST.md
+echo.
+
+echo 📋 Setup Summary:
+echo ==================
+echo ✅ Dependencies installed
+echo ✅ Infrastructure services started
+echo ✅ Database migrated and seeded
+echo ✅ Packages built
+echo.
+echo 🎯 Next Steps:
+echo   1. Review any compilation warnings above
+echo   2. Start the backend: pnpm run dev
+echo   3. Test endpoints: http://localhost:3000/health
+echo   4. View API docs: http://localhost:3000/api/docs
+echo.
+echo ⚡ Quick Test:
+echo   curl http://localhost:3000/health
 echo.
 pause

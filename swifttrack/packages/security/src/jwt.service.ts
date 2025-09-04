@@ -63,4 +63,12 @@ export class JwtService {
       refreshToken: this.generateRefreshToken(payload),
     };
   }
+
+  async signAccessToken(payload: Omit<JwtPayload, 'iat' | 'exp'>): Promise<string> {
+    return this.generateAccessToken(payload);
+  }
+
+  async signRefreshToken(payload: Omit<JwtPayload, 'iat' | 'exp'>): Promise<string> {
+    return this.generateRefreshToken(payload);
+  }
 }
