@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { TerminusModule } from '@nestjs/terminus';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User, Driver, Order, Warehouse, WarehouseDetails } from '@swifttrack/db';
 import { AuthModule } from './auth/auth.module';
 import { OrdersModule } from './orders/orders.module';
 import { DriversModule } from './drivers/drivers.module';
@@ -23,18 +24,19 @@ import { configuration } from './config/configuration';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: any) => ({
+      useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('DATABASE_HOST') || 'localhost',
         port: parseInt(configService.get('DATABASE_PORT')) || 5432,
         username: configService.get('DATABASE_USERNAME') || 'postgres',
         password: configService.get('DATABASE_PASSWORD') || 'password',
         database: configService.get('DATABASE_NAME') || 'swifttrack',
-        entities: ['../../../packages/db/src/entities/*.entity.ts'],
+        entities: [User, Driver, Order, Warehouse, WarehouseDetails],
+        autoLoadEntities: true,
         synchronize: false,
         logging: process.env.NODE_ENV === 'development',
       }),
-      inject: [ConfigModule],
+      inject: [ConfigService],
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
