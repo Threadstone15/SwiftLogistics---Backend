@@ -23,7 +23,7 @@ const AppDataSource = new DataSource({
   username: process.env.DATABASE_USERNAME || 'postgres',
   password: process.env.DATABASE_PASSWORD || 'password',
   database: process.env.DATABASE_NAME || 'swifttrack',
-  synchronize: process.env.NODE_ENV === 'development',
+  synchronize: false, // Always use migrations instead of synchronize
   logging: process.env.NODE_ENV === 'development',
   entities: [
     User,
@@ -37,8 +37,9 @@ const AppDataSource = new DataSource({
     AuditLog,
     Outbox,
   ],
-  migrations: ['dist/migrations/*.js'],
-  subscribers: ['dist/subscribers/*.js'],
+  migrations: [__dirname + '/migrations/*.ts'],
+  subscribers: [__dirname + '/subscribers/*.ts'],
 });
 
 export default AppDataSource;
+export { AppDataSource };

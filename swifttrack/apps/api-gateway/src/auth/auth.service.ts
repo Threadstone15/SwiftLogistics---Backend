@@ -5,16 +5,24 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LoginDto, RegisterDto, UserType, JwtPayload } from '@swifttrack/shared';
 import { JwtService as SecurityJwtService, PasswordService } from '@swifttrack/security';
+import { User, Driver } from '@swifttrack/db';
 
 @Injectable()
 export class AuthService {
-  private mockUsers: any[] = []; // Temporary in-memory storage for development
+  private refreshTokens = new Map<string, string>(); // In production, use Redis
+  private blacklistedTokens = new Set<string>(); // In production, use Redis
 
   constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Driver)
+    private readonly driverRepository: Repository<Driver>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly securityJwtService: SecurityJwtService,
@@ -46,12 +54,12 @@ export class AuthService {
         ...registerDto,
         passwordHash,
       });
-      console.log(`✅ [AUTH-SERVICE] User created successfully with ID: ${user.id}`);
+      console.log(`✅ [AUTH-SERVICE] User created successfully with ID: ${user.userId}`);
 
       // Generate tokens
-      console.log(`🎫 [AUTH-SERVICE] Generating JWT tokens for user: ${user.id}`);
+      console.log(`🎫 [AUTH-SERVICE] Generating JWT tokens for user: ${user.userId}`);
       const payload: JwtPayload = {
-        sub: user.id,
+        sub: user.userId,
         email: user.email,
         type: 'user',
         userType: user.userType,
@@ -62,13 +70,13 @@ export class AuthService {
       console.log(`✅ [AUTH-SERVICE] JWT tokens generated successfully`);
 
       // Store refresh token
-      console.log(`💾 [AUTH-SERVICE] Storing refresh token for user: ${user.id}`);
-      await this.storeRefreshToken(user.id, refreshToken);
+      console.log(`💾 [AUTH-SERVICE] Storing refresh token for user: ${user.userId}`);
+      await this.storeRefreshToken(user.userId.toString(), refreshToken);
       console.log(`✅ [AUTH-SERVICE] Registration completed successfully for: ${registerDto.email}`);
 
       return {
         user: {
-          id: user.id,
+          id: user.userId,
           email: user.email,
           userType: user.userType,
         },
@@ -96,9 +104,9 @@ export class AuthService {
         console.log(`❌ [AUTH-SERVICE] User not found: ${loginDto.email}`);
         throw new UnauthorizedException('Invalid credentials');
       }
-      console.log(`✅ [AUTH-SERVICE] User found: ${user.id}`);
+      console.log(`✅ [AUTH-SERVICE] User found: ${user.userId}`);
 
-      console.log(`🔐 [AUTH-SERVICE] Verifying password for user: ${user.id}`);
+      console.log(`🔐 [AUTH-SERVICE] Verifying password for user: ${user.userId}`);
       const isPasswordValid = await this.passwordService.verify(
         user.passwordHash,
         loginDto.password
@@ -108,11 +116,11 @@ export class AuthService {
         console.log(`❌ [AUTH-SERVICE] Invalid password for user: ${loginDto.email}`);
         throw new UnauthorizedException('Invalid credentials');
       }
-      console.log(`✅ [AUTH-SERVICE] Password verified successfully for user: ${user.id}`);
+      console.log(`✅ [AUTH-SERVICE] Password verified successfully for user: ${user.userId}`);
 
-      console.log(`🎫 [AUTH-SERVICE] Generating JWT tokens for login: ${user.id}`);
+      console.log(`🎫 [AUTH-SERVICE] Generating JWT tokens for login: ${user.userId}`);
       const payload: JwtPayload = {
-        sub: user.id,
+        sub: user.userId,
         email: user.email,
         type: 'user',
         userType: user.userType,
@@ -121,11 +129,11 @@ export class AuthService {
       const accessToken = await this.securityJwtService.signAccessToken(payload);
       const refreshToken = await this.securityJwtService.signRefreshToken(payload);
 
-      await this.storeRefreshToken(user.id, refreshToken);
+      await this.storeRefreshToken(user.userId.toString(), refreshToken);
 
       return {
         user: {
-          id: user.id,
+          id: user.userId,
           email: user.email,
           userType: user.userType,
         },
@@ -159,7 +167,7 @@ export class AuthService {
       }
 
       const payload: JwtPayload = {
-        sub: driver.id,
+        sub: driver.driverId,
         email: driver.email,
         type: 'driver',
         userType: UserType.DRIVER,
@@ -168,11 +176,11 @@ export class AuthService {
       const accessToken = await this.securityJwtService.signAccessToken(payload);
       const refreshToken = await this.securityJwtService.signRefreshToken(payload);
 
-      await this.storeRefreshToken(driver.id, refreshToken);
+      await this.storeRefreshToken(driver.driverId.toString(), refreshToken);
 
       return {
         driver: {
-          id: driver.id,
+          id: driver.driverId,
           email: driver.email,
           nic: driver.nic,
           vehicleReg: driver.vehicleReg,
@@ -236,7 +244,7 @@ export class AuthService {
       }
 
       return {
-        id: user.id,
+        id: user.userId,
         email: user.email,
         userType: user.userType,
         createdAt: user.createdAt,
@@ -279,67 +287,89 @@ export class AuthService {
   }
 
   // Private helper methods - these would typically interact with a database
-  private async findUserByEmail(email: string): Promise<any> {
-    console.log(`🔍 [AUTH-SERVICE] Searching for user in mock storage: ${email}`);
-    const user = this.mockUsers.find(u => u.email === email);
-    if (user) {
-      console.log(`✅ [AUTH-SERVICE] User found: ${email}`);
-    } else {
-      console.log(`❌ [AUTH-SERVICE] User not found: ${email}`);
+  private async findUserByEmail(email: string): Promise<User | null> {
+    console.log(`🔍 [AUTH-SERVICE] Searching for user in database: ${email}`);
+    try {
+      const user = await this.userRepository.findOne({ where: { email } });
+      if (user) {
+        console.log(`✅ [AUTH-SERVICE] User found in database: ${email}`);
+      } else {
+        console.log(`❌ [AUTH-SERVICE] User not found in database: ${email}`);
+      }
+      return user;
+    } catch (error) {
+      console.error(`💥 [AUTH-SERVICE] Database error finding user ${email}:`, error.message);
+      return null;
     }
-    return user || null;
   }
 
-  private async findDriverByEmail(email: string): Promise<any> {
-    // Implementation would query the database
-    return null;
+  private async findDriverByEmail(email: string): Promise<Driver | null> {
+    console.log(`🔍 [AUTH-SERVICE] Searching for driver in database: ${email}`);
+    try {
+      const driver = await this.driverRepository.findOne({ where: { email } });
+      if (driver) {
+        console.log(`✅ [AUTH-SERVICE] Driver found in database: ${email}`);
+      } else {
+        console.log(`❌ [AUTH-SERVICE] Driver not found in database: ${email}`);
+      }
+      return driver;
+    } catch (error) {
+      console.error(`💥 [AUTH-SERVICE] Database error finding driver ${email}:`, error.message);
+      return null;
+    }
   }
 
-  private async findUserById(id: string): Promise<any> {
-    // Implementation would query the database
-    return null;
+  private async findUserById(id: string): Promise<User | null> {
+    console.log(`🔍 [AUTH-SERVICE] Searching for user by ID in database: ${id}`);
+    try {
+      const user = await this.userRepository.findOne({ where: { userId: parseInt(id) } });
+      if (user) {
+        console.log(`✅ [AUTH-SERVICE] User found by ID in database: ${id}`);
+      } else {
+        console.log(`❌ [AUTH-SERVICE] User not found by ID in database: ${id}`);
+      }
+      return user;
+    } catch (error) {
+      console.error(`💥 [AUTH-SERVICE] Database error finding user by ID ${id}:`, error.message);
+      return null;
+    }
   }
 
-  private async createUser(userData: any): Promise<any> {
-    console.log(`💾 [AUTH-SERVICE] Creating user in mock storage with email: ${userData.email}`);
+  private async createUser(userData: any): Promise<User> {
+    console.log(`💾 [AUTH-SERVICE] Creating user in database with email: ${userData.email}`);
     
-    // For now, create a mock user object and store in memory
-    // In a real implementation, this would save to database and return the created user
-    const mockUser = {
-      id: Date.now(), // Use timestamp as a temporary ID
-      userId: Date.now(),
-      email: userData.email,
-      name: userData.name,
-      userType: userData.userType || 'CLIENT',
-      passwordHash: userData.passwordHash,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    
-    // Store in mock array
-    this.mockUsers.push(mockUser);
-    
-    console.log(`✅ [AUTH-SERVICE] Mock user created and stored with ID: ${mockUser.id}`);
-    console.log(`📊 [AUTH-SERVICE] Total users in mock storage: ${this.mockUsers.length}`);
-    return mockUser;
+    try {
+      const user = this.userRepository.create({
+        email: userData.email,
+        name: userData.name,
+        userType: userData.userType || UserType.CLIENT,
+        passwordHash: userData.passwordHash,
+        isActive: true,
+      });
+      
+      const savedUser = await this.userRepository.save(user);
+      console.log(`✅ [AUTH-SERVICE] User created successfully with ID: ${savedUser.userId}`);
+      return savedUser;
+    } catch (error) {
+      console.error(`� [AUTH-SERVICE] Database error creating user:`, error.message);
+      throw new BadRequestException('Failed to create user');
+    }
   }
 
   private async updateUserPassword(userId: string, passwordHash: string): Promise<void> {
-    // Implementation would update password in database
+    await this.userRepository.update(userId, { passwordHash });
   }
 
   private async storeRefreshToken(userId: string, refreshToken: string): Promise<void> {
-    // Implementation would store refresh token in Redis
+    this.refreshTokens.set(userId, refreshToken);
   }
 
   private async getStoredRefreshToken(userId: string): Promise<string | null> {
-    // Implementation would get refresh token from Redis
-    return null;
+    return this.refreshTokens.get(userId) || null;
   }
 
   private async removeRefreshToken(userId: string): Promise<void> {
-    // Implementation would remove refresh token from Redis
+    this.refreshTokens.delete(userId);
   }
 
   private async blacklistToken(token: string): Promise<void> {

@@ -12,6 +12,7 @@
     "migration:create": "typeorm migration:create",
     "migration:generate": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
     "seed": "ts-node --transpile-only src/seeds/index.ts",
+    "health": "ts-node --transpile-only src/health-check.ts",
     "test": "jest"
   },
   "dependencies": {
