@@ -7,10 +7,10 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "migrate:up": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/data-source.ts",
-    "migrate:down": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/data-source.ts",
+    "migrate:up": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/typeorm.config.ts",
+    "migrate:down": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/typeorm.config.ts",
     "migration:create": "typeorm migration:create",
-    "migration:generate": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/data-source.ts",
+    "migration:generate": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/typeorm.config.ts",
     "seed": "ts-node --transpile-only src/seeds/index.ts",
     "health": "ts-node --transpile-only src/health-check.ts",
     "test": "jest"
