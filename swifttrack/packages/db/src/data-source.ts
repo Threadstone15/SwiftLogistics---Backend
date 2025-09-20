@@ -43,3 +43,6 @@ const AppDataSource = new DataSource({
 
 export default AppDataSource;
 export { AppDataSource };
+
+// Required for TypeORM CLI
+module.exports = AppDataSource;

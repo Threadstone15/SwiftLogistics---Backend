@@ -234,7 +234,7 @@ class SwiftTrackLauncher {
         this.log('🌐 Starting API Gateway on port 3000...', 'info');
         const apiGateway = spawn(
             this.isWindows ? 'cmd' : 'bash',
-            this.isWindows ? ['/c', 'node dist/apps/api-gateway/src/main.js'] : ['-c', 'node dist/apps/api-gateway/src/main.js'],
+            this.isWindows ? ['/c', 'node dist/main.js'] : ['-c', 'node dist/main.js'],
             {
                 cwd: path.join(this.rootDir, 'apps', 'api-gateway'),
                 stdio: 'pipe',
@@ -249,7 +249,7 @@ class SwiftTrackLauncher {
         this.log('📦 Starting Order Service on port 3002...', 'info');
         const orderService = spawn(
             this.isWindows ? 'cmd' : 'bash',
-            this.isWindows ? ['/c', 'node dist/apps/order-service/src/main.js'] : ['-c', 'node dist/apps/order-service/src/main.js'],
+            this.isWindows ? ['/c', 'node dist/main.js'] : ['-c', 'node dist/main.js'],
             {
                 cwd: path.join(this.rootDir, 'apps', 'order-service'),
                 stdio: 'pipe',
